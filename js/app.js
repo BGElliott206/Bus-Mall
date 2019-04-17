@@ -8,20 +8,22 @@ var container = document.getElementById('item-section');
 
 //global variables
 
-var MAX_CLICKS = 10;
+var MAX_CLICKS = 25;
 var previouslyShown = ['inital', 'place', 'holders'];
 var productsArray = [];
-var chartVotes =[];
-var chartNames = [];
+var productDescriptions = [];
 
 var totalClicks = 0;
-//////////////////////////////////
+
+//Constructor
 function Product(picturePath, description) {
   this.picturePath = picturePath;
   this.description = description;
   this.vote = 0;
+  this.views = 0;
 
   productsArray.push(this);
+  productDescriptions.push(description);
 }
 
 new Product('img/bag.jpg', 'R2 D2 robot rolling suitcase');
@@ -46,10 +48,6 @@ new Product('img/water-can.jpg', 'Non-functioning watering can');
 new Product('img/wine-glass.jpg', 'Egg-shaped wine glass');
 
 
-
-
-
-////////////////////////////////////////////////
 function getRandom () {
   var randomNumber = Math.floor(Math.random() * productsArray.length);
   return randomNumber;
@@ -107,7 +105,7 @@ function handleClick(event){
   }
   if(totalClicks === MAX_CLICKS){
     container.removeEventListener('click', handleClick);
-    updateChartArrays(); //will write function to populate chart
+    // updateChartArrays(); //will write function to populate chart
     drawChart(); //will write function to render chart
   }
   productRender();
@@ -115,87 +113,42 @@ function handleClick(event){
 
 productRender();
 
-function updateChartArrays(){
-  for(var i = 0; i < productsArray.length; i++){
-    chartNames[i] = productsArray[i].description;
-    chartVotes[i] = productsArray[i].vote;
-  }
-}
-
-
-
-
-
-
-// function randomPicGenerator(){
-//   this.previousIndices = [-1,-2,-3];
-//   this.currentPics =[];
-
-
-
-
-//   this.isIndexDuplicated = function(newRandomNumber) {
-//     this.previousIndices = this.currentIndices;
-//     this.currentIndices = [];
-
-//     var newRandomNumber = this.getRandomIndex();
-
-//     while(this.currentPics.length < 3) {
-//       if(this.isIndexDuplicated(newRandomNumber)){
-//         newRandomNumber = this.getRandomIndex();
-//       } else {
-//         this.currentIndices.push(newRandomNumber);
-//         newRandomNumber = this.getRandomIndex();
-//       }
-//     }
-//   }
-//   this.saveRandomNumber = function () {
+// function updateChartArrays(){
+//   for(var i = 0; i < productsArray.length; i++){
+//     productDescriptions[i] = productsArray[i].description;
+//     chartVotes[i] = productsArray[i].vote;
 //   }
 // }
-
-// var random = new RandomIndexGenerator();
-
-// function renderRandomThreePics(event) {
-// if(event) [
-//   for(var i = 0; i < products.length; i++){
-//     products[i].registerClick();
-//   }
-// ]
-
-// totalClicks++;
-
-// if(totalClicks === MAX_CLICKS) {
-//   renderChart();
-// }
-
-// random.getThreeRandomIndices();
-// var productIndices = random.currentIndices;
-
-// var picOneReference = document.getElementById('picOneId');
-// var picTwoReference = document.getElementById('picTwoId');
-// var picthreeReference = document.getElementById('picThreeId');
-
-// var randomIndexOne = productIndices[0];
-// var randomIndexTwo = productIndices[1];
-// var randomIndexThree
-
-//   // var picOne = products [picsIndices[0]];
-//   // var picTwo = products [picsIndices[1]];
-//   // var picThree = products [picsIndices[2]];
-
-// }
-
-//pic constructor
-
-
-// renderRandomPic();
-
-// var productPictureReference = document.getElementById('pic-one');
-// productPictureReference.addEventListener ('click', renderRandomPic);
-
-// var random = new RandomPicGenerator();
-// random.generateRandomThreePics();
-
-// renderRandomThreePics(picsIndices);
 
 container.addEventListener('click', handleClick);
+
+
+function drawChart(){
+  var canvasReference = document.getElementById('results-chart');
+
+  var totalVotes = [];
+  for(var i = 0;i < productsArray.length; i++) {
+    totalVotes.push(productsArray[i].vote);
+  }
+
+  new Chart(canvasReference, {
+    type: 'bar',
+    data: {
+      labels: productDescriptions, // label for each individual bar
+      datasets: [{
+        label: 'Votes Per Picture',
+        data: totalVotes, // an array of the number of votes per goat
+        backgroundColor: ['red', 'blue', 'green', 'orange', 'pink', 'black', 'red', 'blue', 'green', 'orange', 'pink'],
+      }],
+    },
+    options: {
+      scales: {
+        yAxes: [{
+          tick: {
+            beginAtZero: true,
+          }
+        }]
+      }
+    }
+  });
+}
